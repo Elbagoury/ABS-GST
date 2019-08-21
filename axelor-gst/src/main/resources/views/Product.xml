@@ -6,6 +6,13 @@
 	<grid name="product-grid" title="Products" id="gst-product-grid"
 		model="com.axelor.apps.base.db.Product" orderBy="code,name"
 		x-row-height="80">
+		<toolbar>
+			<button name="btnPrint" title="Print Product Details"
+				onClick="action.report.attachment.setproductreportvalue,print.report.product.details"
+				icon="fa-print" />
+			<button name="btnCreateInvoice" title="Create Invoice"
+				icon="fa-rocket" />
+		</toolbar>
 		<field name="code" x-bind="{{code|unaccent|uppercase}}"
 			width="60" />
 		<field name="name" width="300" />
@@ -27,6 +34,7 @@
 				onClick="save,action-product-method-show-product-sheet" />
 			<button name="sendByEmailBtn" title="Send Email"
 				icon="fa-envelope" onClick="action-send-by-email-with-template" />
+
 		</toolbar>
 		<panel name="mainPanel">
 			<panel name="namePanel" colSpan="4">
@@ -137,7 +145,8 @@
 						form-view="product-family-form" grid-view="product-family-grid" />
 					<field name="productCategory" canEdit="false" colSpan="12"
 						form-view="product-category-form"
-						grid-view="product-category-grid" onChange="action.gst.product.setgstrate"/>
+						grid-view="product-category-grid"
+						onChange="action.gst.product.setgstrate" />
 					<field name="hsbn" />
 					<field name="gstRate" />
 				</panel>
@@ -573,9 +582,21 @@
 		</panel-mail>
 	</form>
 
-	<action-attrs
-		name="action.gst.product.setgstrate">
+	<action-method
+		name="action.report.attachment.setproductreportvalue">
+		<call class="com.axelor.gst.web.ProductController"
+			method="setProductReportValue" />
+	</action-method>
+
+	<action-attrs name="action.gst.product.setgstrate">
 		<attribute for="gstRate" name="value:set"
 			expr="eval: productCategory.gstRate" />
 	</action-attrs>
+
+	<action-report name="print.report.product.details"
+		design="product_report.rptdesign" output="product-${date}"
+		format="pdf">
+		<param name="productId" expr="eval: ids" />
+		<param name="Path" expr="eval: Path" />
+	</action-report>
 </object-views>
