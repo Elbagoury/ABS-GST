@@ -137,9 +137,9 @@
 						form-view="product-family-form" grid-view="product-family-grid" />
 					<field name="productCategory" canEdit="false" colSpan="12"
 						form-view="product-category-form"
-						grid-view="product-category-grid" />
-					<field name="hsbn"/>
-					<field name="gstRate"/>
+						grid-view="product-category-grid" onChange="action.gst.product.setgstrate"/>
+					<field name="hsbn" />
+					<field name="gstRate" />
 				</panel>
 				<panel name="inAtiExpensePanel" colSpan="12">
 					<field name="inAti" colSpan="6"
@@ -573,5 +573,9 @@
 		</panel-mail>
 	</form>
 
-
+	<action-attrs
+		name="action.gst.product.setgstrate">
+		<attribute for="gstRate" name="value:set"
+			expr="eval: productCategory.gstRate" />
+	</action-attrs>
 </object-views>
