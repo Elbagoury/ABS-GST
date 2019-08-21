@@ -10,5 +10,14 @@
 		tag="Application" tag-style="info" icon="fa-book"
 		icon-background="green" />
 
+	<menuitem name="admin-root-organisation-state"
+		parent="admin-root-organisation-territory" title="State"
+		action="admin.root.organisation.state" tag="ADDED" />
+
+	<action-view name="admin.root.organisation.state"
+		title="States" model="com.axelor.gst.db.State">
+		<view type="grid" name="state-grid" />
+		<view type="form" name="state-form" />
+	</action-view>
 </object-views>
 

@@ -5,7 +5,7 @@
 	xsi:schemaLocation="http://axelor.com/xml/ns/domain-models
   http://axelor.com/xml/ns/domain-models/domain-models_5.0.xsd">
 
-	<module name="gst" package="com.axelor.apps.gst.db" />
+	<module name="gst" package="com.axelor.gst.db" />
 
 	<entity name="State" sequential="true" cachable="true">
 		<string name="name"  title="State Name" required="true" namecolumn="true" />
