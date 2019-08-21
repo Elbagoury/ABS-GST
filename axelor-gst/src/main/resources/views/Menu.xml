@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<object-views xmlns="http://axelor.com/xml/ns/object-views"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://axelor.com/xml/ns/object-views
+  http://axelor.com/xml/ns/object-views/object-views_5.0.xsd">
+
+
+	<menuitem name="gst-root" title="GST Application" order="-90"
+		tag-get="com.axelor.mail.web.MailController:inboxMenuTag()"
+		tag="Application" tag-style="info" icon="fa-book"
+		icon-background="green" />
+
+	<menuitem name="gst-root-product" title="Product"
+		parent="gst-root" />
+		
+	<menuitem name="product-root-product"
+		parent="gst-root-product" title="Product"
+		action="action.product.view.product" />
+	<action-view name="action.product.view.product"
+		title="Product" model="com.axelor.apps.base.db.Product">
+		<view type="grid" name="product-grid" />
+		<view type="form" name="product-form" />
+	</action-view>
+
+
+</object-views>
+
