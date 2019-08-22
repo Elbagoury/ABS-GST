@@ -9,5 +9,7 @@
 	<entity name="Address" lang="java">
 		<many-to-one name="state" ref="com.axelor.gst.db.State"
 			title="State" />
+		<string name="type" title="Address Type" required="true"
+			selection="gst.address.type.select" namecolumn="true" />
 	</entity>
 </domain-models>
