@@ -216,7 +216,7 @@
 					canRemove="statusSelect == 1"
 					readonlyIf="statusSelect == 3 || partner == null" colSpan="12"
 					form-view="invoice-line-form" grid-view="invoice-line-grid"
-					onChange="action-invoice-group-invoice-line-onchange,action-invoice-create-invoice-generate-method-invoicecalculatefieldvalue"
+					onChange="action-invoice-group-invoice-line-onchange"
 					canMove="true" orderBy="sequence" />
 				<panel-related name="invoiceLineTaxListPanel"
 					field="invoiceLineTaxList" colSpan="12"
@@ -666,7 +666,7 @@ InvoiceSet.length > 0))"
 					canRemove="statusSelect == 1"
 					readonlyIf="statusSelect == 3 || partner == null" colSpan="12"
 					form-view="invoice-line-client-form" grid-view="invoice-line-grid"
-					onChange="action-invoice-method-compute,action-invoice-create-invoice-generate-method-invoicecalculatefieldvalue" canMove="true"
+					onChange="action-invoice-method-compute" canMove="true"
 					orderBy="sequence" />
 				<panel-related name="invoiceLineTaxListPanel"
 					field="invoiceLineTaxList" colSpan="12"
@@ -790,6 +790,16 @@ InvoiceSet.length > 0))"
 
 
 	</form>
+	
+	<action-group name="action-invoice-group-invoice-line-onchange" id="action-invoice-group-invoice-line-onchange-id">
+		<action name="action-invoice-method-remove-subline"/> 
+		<action name="save" if="invoiceLineList.find{it->it.typeSelect == 2 &amp;&amp; (it.version != null || it.id == null)} != null" />
+		<action name="action-invoice-method-add-subline"/>
+		<action name="action-invoice-method-compute"/>
+		<action name="save" if="invoiceLineList.find{it->it.typeSelect == 2 &amp;&amp; (it.version != null || it.id == null)} != null" />
+		<action name="action-invoice-create-invoice-generate-method-invoicecalculatefieldvalue"/>
+	</action-group>
+  
 
 	<action-method
 		name="action-invoice-create-invoice-generate-method-invoicecalculatefieldvalue">

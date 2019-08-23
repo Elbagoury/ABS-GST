@@ -74,7 +74,7 @@
 		<panel-tabs name="mainPanelTab" hideIf="typeSelect == 1">
 			<panel name="informationsPanel" title="Information">
 				<field name="product" canEdit="false"
-					onChange="action-invoiceLine-set-product-value,action-group-account-invoice-line-product-onchange,action-invoiceLine-generate-method-calculatedfieldvalue"
+					onChange="action-group-account-invoice-line-product-onchange"
 					onSelect="action-invoice-line-attrs-set-product-domain-onselect"
 					form-view="product-form" grid-view="product-grid" />
 				<field name="$isFilterOnSupplier" title="Filter on supplier"
@@ -92,7 +92,7 @@
 				<field name="hsbn" colSpan="3" />
 				<field name="qty" colSpan="3" required="true"
 					readonlyIf="isSubLine"
-					onChange="action-group-account-invoice-line-qty-onchange,action-invoiceLine-generate-method-calculatedfieldvalue" />
+					onChange="action-group-account-invoice-line-qty-onchange" />
 				<field name="unit" colSpan="3" canEdit="false"
 					form-view="unit-form" grid-view="unit-grid"
 					readonlyIf="typeSelect == 2 || isSubLine" />
@@ -248,12 +248,12 @@
 		<panel-tabs name="mainPanelTab" hideIf="typeSelect == 1">
 			<panel name="informationsPanel" title="Informations">
 				<field name="product"
-					onChange="action-invoiceLine-set-product-value,action-group-account-invoice-line-product-onchange,action-invoiceLine-generate-method-calculatedfieldvalue"
+					onChange="action-group-account-invoice-line-product-onchange"
 					form-view="product-form" grid-view="product-grid" canView="false" />
 				<field name="productName" requiredIf="!typeSelect == 1" />
 				<field name="hsbn" colSpan="3" />
 				<field name="qty" required="true"
-					onChange="action-group-account-invoice-line-qty-onchange,action-invoiceLine-generate-method-calculatedfieldvalue" />
+					onChange="action-group-account-invoice-line-qty-onchange" />
 				<field name="price" required="true"
 					onChange="action-invoice-line-method-onchange-price,action-invoice-line-method-compute,action-invoice-line-method-compute-analytic-distribution"
 					hidden="true" />
@@ -286,6 +286,29 @@
 		</panel-tabs>
 	</form>
 
+
+	<action-group
+		name="action-group-account-invoice-line-product-onchange"
+		id="action-group-account-invoice-line-product-onchange-id">
+		<action
+			name="action-invoice-line-method-get-product-information" />
+		<action name="action-invoice-line-method-get-product-price"
+			if="__config__.app.isApp('supplychain') &amp;&amp; (__config__.app.isApp('sale') &amp;&amp; __config__.app.getApp('sale').getProductPackMgt())" />
+		<action name="action-invoice-line-method-compute" />
+		<action
+			name="action-invoice-line-method-get-and-compute-analytic-distribution" />
+		<action name="action-budget-validate-exceed-line-amount" />
+		<action name="action-invoice-line-attrs-compute-total-pack"
+			if="(__config__.app.isApp('supplychain') &amp;&amp; __config__.app.getApp('sale').getProductPackMgt())" />
+		<action
+			name="action-invoice-line-method-get-fixed-asset-category"
+			if="__config__.app.isApp('account')" />
+		<action name="action-attrs-account-invoice-line-onnew-onload" />
+		<action name="action-invoiceLine-set-product-value" />
+		<action
+			name="action-invoiceLine-generate-method-calculatedfieldvalue" />
+	</action-group>
+
 	<action-attrs name="action-invoiceLine-set-product-value">
 		<attribute for="gstRate" name="value"
 			expr="eval: product.gstRate" if="product" />
@@ -294,11 +317,11 @@
 			expr="eval: product.hsbn" if="product" />
 		<attribute for="hsbn" name="value:set" expr="" if="!product" />
 	</action-attrs>
-	
-		<action-method
+
+	<action-method
 		name="action-invoiceLine-generate-method-calculatedfieldvalue">
 		<call class="com.axelor.gst.web.InvoiceLineController"
 			method="calculatedFieldValue" />
 	</action-method>
-	
+
 </object-views>
