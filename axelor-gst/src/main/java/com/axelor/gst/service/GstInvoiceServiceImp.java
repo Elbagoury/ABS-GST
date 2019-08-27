@@ -12,42 +12,49 @@ import com.axelor.apps.account.service.invoice.factory.VentilateFactory;
 import com.axelor.apps.account.service.invoice.generator.InvoiceGenerator;
 import com.axelor.apps.base.service.PartnerService;
 import com.axelor.apps.base.service.alarm.AlarmEngineService;
+import com.axelor.apps.businessproject.service.InvoiceServiceProjectImpl;
 import com.axelor.apps.supplychain.service.invoice.InvoiceServiceSupplychainImpl;
 import com.axelor.apps.supplychain.service.invoice.generator.InvoiceGeneratorSupplyChain;
 import com.axelor.exception.AxelorException;
+import com.google.inject.Inject;
 
 import java.math.BigDecimal;
 
-public class GstInvoiceServiceImp extends InvoiceGenerator {
+public class GstInvoiceServiceImp extends InvoiceServiceProjectImpl {
 
+@Inject
+public GstInvoiceServiceImp(ValidateFactory validateFactory, VentilateFactory ventilateFactory,
+			CancelFactory cancelFactory, AlarmEngineService<Invoice> alarmEngineService, InvoiceRepository invoiceRepo,
+			AppAccountService appAccountService, PartnerService partnerService, InvoiceLineService invoiceLineService) {
+		super(validateFactory, ventilateFactory, cancelFactory, alarmEngineService, invoiceRepo, appAccountService,
+				partnerService, invoiceLineService);
+		// TODO Auto-generated constructor stub
+	}
 
- @Override
-	public void computeInvoice(Invoice invoice) throws AxelorException {
-		// TODO Auto-generated method stub
-		super.computeInvoice(invoice);
-		 BigDecimal netAmount = BigDecimal.ZERO;
-		    BigDecimal netCgst = BigDecimal.ZERO;
-		    BigDecimal netSgst = BigDecimal.ZERO;
-		    BigDecimal netIgst = BigDecimal.ZERO;
-		    BigDecimal grossAmount = BigDecimal.ZERO;
-		    for (InvoiceLine invoiceLine : invoice.getInvoiceLineList()) {
-		      netAmount = netAmount.add(invoiceLine.getExTaxTotal());
-		      netCgst = netCgst.add(invoiceLine.getCgst());
-		      netSgst = netSgst.add(invoiceLine.getSgst());
-		      netIgst = netIgst.add(invoiceLine.getIgst());
-		    }
-		    grossAmount = netAmount.add(netIgst).add(netSgst).add(netCgst);
-		    invoice.setNetAmount(netAmount);
-		    invoice.setNetCgst(netCgst);
-		    invoice.setNetIgst(netIgst);
-		    invoice.setNetSgst(netSgst);
-		    invoice.setGrossAmount(grossAmount);
-		 	
- }
+@Override
+	public Invoice compute(Invoice invoice) throws AxelorException {
 
-public Invoice generate() throws AxelorException {
-	// TODO Auto-generated method stub
-	return null;
-}
+	  
+	  super.compute(invoice);
+	  BigDecimal netAmount = BigDecimal.ZERO;
+	    BigDecimal netCgst = BigDecimal.ZERO;
+	    BigDecimal netSgst = BigDecimal.ZERO;
+	    BigDecimal netIgst = BigDecimal.ZERO;
+	    BigDecimal grossAmount = BigDecimal.ZERO;
+	    for (InvoiceLine invoiceLine : invoice.getInvoiceLineList()) {
+	      netAmount = netAmount.add(invoiceLine.getExTaxTotal());
+	      netCgst = netCgst.add(invoiceLine.getCgst());
+	      netSgst = netSgst.add(invoiceLine.getSgst());
+	      netIgst = netIgst.add(invoiceLine.getIgst());
+	    }
+	    grossAmount = netAmount.add(netIgst).add(netSgst).add(netCgst);
+	    invoice.setNetAmount(netAmount);
+	    invoice.setNetCgst(netCgst);
+	    invoice.setNetIgst(netIgst);
+	    invoice.setNetSgst(netSgst);
+	    invoice.setGrossAmount(grossAmount);
 
+	  // TODO Auto-generated method stub
+		return invoice;
+	}
 }
