@@ -16,11 +16,9 @@
 		<field name="exTaxTotal" aggregate="sum" />
 		<field name="inTaxTotal" aggregate="sum" />
 		<field name="typeSelect" hidden="true" />
-		<field name="gstRate" />
 		<field name="igst" />
 		<field name="sgst" />
 		<field name="cgst" />
-		<field name="grossAmount" />
 	</grid>
 
 	<grid name="invoice-line-menu-grid" title="Invoice lines"
@@ -115,11 +113,9 @@
 					onChange="action-invoice-line-method-convert-tax,action-invoice-line-method-compute,action-invoice-line-method-compute-analytic-distribution,action-budget-validate-exceed-line-amount"
 					grid-view="tax-line-grid" form-view="tax-line-form" />
 				<field name="exTaxTotal" colSpan="3" readonly="true" />
-				<field name="gstRate" />
 				<field name="igst" />
 				<field name="sgst" />
 				<field name="cgst" />
-				<field name="grossAmount" />
 				<field name="inTaxTotal" colSpan="3" readonly="true" />
 				<field name="isSubLine" hideIf="!isSubLine"
 					if="(__config__.app.isApp('sale') &amp;&amp; __config__.app.getApp('sale').getProductPackMgt())"
@@ -268,11 +264,9 @@
 					onChange="action-invoice-line-method-convert-tax,action-invoice-line-method-compute,action-invoice-line-method-compute-analytic-distribution"
 					grid-view="tax-line-grid" form-view="tax-line-form" />
 				<field name="exTaxTotal" readonly="true" />
-				<field name="gstRate" />
 				<field name="igst" />
 				<field name="sgst" />
 				<field name="cgst" />
-				<field name="grossAmount" />
 				<field name="inTaxTotal" readonly="true" />
 				<field name="invoice" hidden="true" />
 				<panel name="discountPanel" title="Discount" colSpan="12">
@@ -305,13 +299,9 @@
 			name="action-invoice-line-method-get-fixed-asset-category"
 			if="__config__.app.isApp('account')" />
 		<action name="action-attrs-account-invoice-line-onnew-onload" />
-	
 	</action-group>
 
 	<action-attrs name="action-invoiceLine-set-product-value">
-		<attribute for="gstRate" name="value"
-			expr="eval: product.gstRate" if="product" />
-		<attribute for="gstRate" name="value" expr="0" if="!product" />
 		<attribute for="hsbn" name="value:set"
 			expr="eval: product.hsbn" if="product" />
 		<attribute for="hsbn" name="value:set" expr="" if="!product" />

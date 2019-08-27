@@ -500,11 +500,9 @@ InvoiceSet.length > 0))"
 			</field>
 		</panel>
 		<panel sidebar="true">
-			<field name="netAmount" colSpan="6" />
 			<field name="netIgst" colSpan="6" />
 			<field name="netCgst" colSpan="6" />
 			<field name="netSgst" colSpan="6" />
-			<field name="grossAmount" colSpan="6" />
 		</panel>
 		<panel name="totalsCompanyCurrencyPanel"
 			title="Totals company currency" itemSpan="6" sidebar="true"
@@ -781,11 +779,9 @@ InvoiceSet.length > 0))"
 			</field>
 		</panel>
 		<panel sidebar="true">
-			<field name="netAmount" colSpan="6" />
 			<field name="netIgst" colSpan="6" />
 			<field name="netCgst" colSpan="6" />
 			<field name="netSgst" colSpan="6" />
-			<field name="grossAmount" colSpan="6" />
 		</panel>
 
 

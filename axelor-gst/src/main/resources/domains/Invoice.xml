@@ -7,12 +7,9 @@
 	<module name="account" package="com.axelor.apps.account.db" />
 
 	<entity sequential="true" name="Invoice" lang="java">
-		<decimal name="netAmount" readonly="true" title="Net Amount" />
 		<decimal name="netIgst" readonly="true" title="Net IGST" />
 		<decimal name="netCgst" readonly="true" title="Net CGST" />
 		<decimal name="netSgst" readonly="true" title="Net SGST" />
-		<decimal name="grossAmount" readonly="true"
-			title="Gross Amount" />
 	</entity>
 
 </domain-models>
