@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<object-views xmlns="http://axelor.com/xml/ns/object-views"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://axelor.com/xml/ns/object-views http://axelor.com/xml/ns/object-views/object-views_5.0.xsd">
+
+	<form name="purchase-order-line-form" title="PO line"
+		model="com.axelor.apps.purchase.db.PurchaseOrderLine"
+		onNew="action-group-purchase-purchase-orderline-onnew"
+		onLoad="action-group-purchase-purchase-orderline-onload" width="large" id="purchase-order-line-form-id">
+
+		<panel name="namePanel" hideIf="!isTitleLine">
+			<field name="productName" colSpan="10" title="Title" />
+			<field name="isTitleLine" colSpan="2"
+				onChange="action-purchase-order-line-method-empty-line"
+				widget="boolean-switch" />
+		</panel>
+
+		<panel-tabs name="mainPanelTab" hideIf="isTitleLine">
+			<panel name="informationsPanel" title="Information">
+				<field name="receiptState" showTitle="false" colSpan="3"
+					showIf="receiptState > 0" if-module="axelor-supplychain"
+					if="__config__.app.isApp('supplychain')">
+					<viewer><![CDATA[
+	                    <h4>
+	                        <span class="label label-important" ng-show="record.receiptState == 1" x-translate>Not received</span>
+	                        <span class="label label-warning" ng-show="record.receiptState == 2" x-translate>Partially received</span>
+	                        <span class="label label-success" ng-show="record.receiptState == 3" x-translate>Received</span>
+	                    </h4>
+					]]></viewer>
+				</field>
+				<spacer name="receiptStateSpacer"
+					if="__config__.app.isApp('supplychain')" />
+				<field name="product" canEdit="false"
+					onChange="action-group-purchase-purchase-orderline-product-onchange"
+					onSelect="action-purchase-order-line-attrs-product-domain"
+					form-view="product-form" grid-view="product-grid" />
+				<field name="$isFilterOnSupplier" type="boolean"
+					title="Filter on supplier" widget="boolean-switch" colSpan="2"
+					if="__config__.app.getApp('purchase').getManageSupplierCatalog()" />
+				<field name="isTitleLine" colSpan="2" colOffset="2"
+					onChange="action-purchase-order-line-method-empty-line"
+					widget="boolean-switch" />
+				<field name="productCode" colSpan="3" />
+				<field name="productName" colSpan="9" />
+				<field name="hsbn" colSpan="3" />
+				<panel name="orderDetailsPanel" colSpan="12">
+					<field name="qty"
+						onChange="action-group-purchase-purchase-orderline-qty-onchange"
+						colSpan="3" validIf="$qtyValid != false" />
+					<field name="unit" colSpan="3" canEdit="false"
+						form-view="unit-form" grid-view="unit-grid" />
+					<panel name="pricePanel" colSpan="3">
+						<field name="price" hidden="true" colSpan="12"
+							onChange="action-purchase-order-line-method-onchange-price,action-purchase-order-line-method-compute,action-purchase-order-line-method-compute-analytic-distribution,action-budget-validate-exceed-line-amount">
+							<hilite color="danger"
+								if=" $number(saleMinPrice) &lt; $number(salePrice)" />
+						</field>
+						<field name="inTaxPrice" hidden="true" colSpan="12"
+							onChange="action-purchase-order-line-method-onchange-intaxprice,action-purchase-order-line-method-compute,action-purchase-order-line-method-compute-analytic-distribution,action-budget-validate-exceed-line-amount">
+							<hilite color="danger"
+								if=" $number(saleMinPrice) &lt; $number(salePrice)" />
+						</field>
+					</panel>
+					<field name="saleMinPrice" colSpan="3" readonly="true" />
+					<label name="minQtyNotRespectedLabel" hidden="true"
+						colSpan="12" />
+					<label name="multipleQtyNotRespectedLabel" hidden="true"
+						colSpan="12" />
+					<field name="$qtyValid" hidden="true" colSpan="12" />
+				</panel>
+				<panel name="discountPanel" colSpan="12">
+					<field name="discountTypeSelect" colSpan="3"
+						onChange="action-purchase-order-line-method-compute,action-purchase-order-line-attrs-discountamount-title,action-purchase-order-line-method-compute-analytic-distribution,action-budget-validate-exceed-line-amount" />
+					<field name="discountAmount" colSpan="3"
+						onChange="action-purchase-order-line-method-compute,action-purchase-order-line-method-compute-analytic-distribution,action-budget-validate-exceed-line-amount"
+						hideIf="discountTypeSelect == 3" />
+					<field name="priceDiscounted" colSpan="3" readonly="true"
+						hidden="true" />
+				</panel>
+				<field name="taxLine" canEdit="false"
+					onChange="action-group-purchase-purchase-orderline-taxline-onchange"
+					domain="self.endDate = null or self.endDate &gt; :__date__"
+					grid-view="tax-line-grid" form-view="tax-line-form" />
+				<field name="exTaxTotal" colSpan="3" readonly="true" />
+				<field name="gstRate" />
+				<field name="igst" />
+				<field name="sgst" />
+				<field name="cgst" />
+				<field name="grossAmount" />
+				<field name="inTaxTotal" colSpan="3" readonly="true" />
+				<field name="fixedAssets" widget="boolean-switch" />
+				<field name="salePrice" colSpan="3" hidden="true" />
+				<field name="taxEquiv" hidden="true"
+					grid-view="tax-equiv-grid" form-view="tax-equiv-form" />
+				<panel name="descriptionPanel" title="Description"
+					colSpan="12">
+					<field name="description" showTitle="false" colSpan="12"
+						widget="html" x-lite="true" />
+				</panel>
+			</panel>
+			<panel name="supplierRequestsPanel" title="Suppliers requests"
+				if-module="axelor-supplier-management"
+				if="__config__.app.getApp('purchase').getSupplierRequestMgt()">
+				<button name="generateSuppliersRequestsBtn"
+					title="Generate suppliers requests"
+					onClick="action-group-purchase-purchase-orderline-generate-supplierreq-click" />
+				<field name="supplierPartner" form-view="partner-form"
+					grid-view="partner-grid"
+					onSelect="action-purchase-order-line-set-supplierPartner-domain" />
+				<panel-related
+					name="purchaseOrderSupplierLineListPanel"
+					field="purchaseOrderSupplierLineList" colSpan="12"
+					form-view="purchase-order-supplier-line-form"
+					grid-view="purchase-order-supplier-line-grid" />
+			</panel>
+			<panel name="budgetDistributionPanel" title="Budget"
+				if="__config__.app.isApp('budget')" if-module="axelor-supplychain">
+				<field name="budget"
+					if="!__config__.app.getApp('budget').getManageMultiBudget()" />
+				<panel-related name="budgetDistributionListPanel"
+					field="budgetDistributionList" editable="true" colSpan="12"
+					if="__config__.app.getApp('budget').getManageMultiBudget()" />
+			</panel>
+			<panel name="deliveryPanel" title="Delivery" hidden="true">
+				<field name="desiredDelivDate" />
+				<field name="estimatedDelivDate" />
+				<field name="receivedQty" readonly="true" />
+				<field name="supplierComment" colSpan="12" />
+				<panel-dashlet title="In Stock Moves"
+					name="POLineStockMoveLinePanel"
+					action="action-purchase-order-line-view-stock-move-line"
+					colSpan="12" />
+			</panel>
+			<panel name="invoicingPanel" title="Invoicing"
+				if-module="axelor-account"
+				if="__config__.app.isApp('supplychain') &amp;&amp; __config__.app.getApp('supplychain').getManageInvoicedAmountByLine()">
+				<field name="amountInvoiced" />
+				<panel-dashlet name="POLineInvoicelinesPanel"
+					action="action-purchase-order-line-view-show-invoice-lines"
+					colSpan="12" />
+			</panel>
+			<panel name="projectPanel"
+				if="__config__.app.isApp('business-project') &amp;&amp; __config__.app.getApp('business-project').getProjectPurchaseOrderLines()"
+				title="Business Project" if-module="axelor-business-project">
+				<field name="project" domain="self.isBusinessProject = true"
+					title="Business Project" requiredIf="toInvoice"
+					form-view="project-form" grid-view="project-grid" canEdit="false" />
+				<field name="toInvoice"
+					if="__config__.app.isApp('business-project') &amp;&amp; __config__.app.getApp('business-project').getProjectPurchaseOrderLines()"
+					colSpan="3" if-module="axelor-business-project" />
+				<field name="invoiced"
+					showIf="toInvoice &amp;&amp; id &amp;&amp; $readonly()" colSpan="3"
+					showTitle="false">
+					<viewer><![CDATA[
+					<h4>
+                        <span class="label label-success" style="margin: 5px 0 !important; display: inline-table; line-height: initial;" ng-show="record.invoiced" x-translate>Invoiced</span>
+                    	<span class="label label-important" style="margin: 5px 0 !important; display: inline-table; line-height: initial;" ng-show="!record.invoiced" x-translate>Not invoiced</span>
+                    </h4>
+				]]></viewer>
+				</field>
+			</panel>
+			<panel name="analyticDistributionPanel" title="Analytics"
+				if-module="axelor-supplychain"
+				if="__config__.app.isApp('supplychain') &amp;&amp; __config__.app.getApp('account').getManageAnalyticAccounting()"
+				onTabSelect="action-purchase-order-line-attrs-read-only-distribution-lines">
+				<field name="analyticDistributionTemplate"
+					grid-view="analytic-distribution-template-grid"
+					form-view="analytic-distribution-template-form" canEdit="false"
+					onChange="action-purchase-order-line-method-create-distribution"
+					onSelect="action-purchase-order-line-attrs-set-domain-analytic-distribution-template" />
+				<panel-related name="analyticMoveLineListPanel"
+					field="analyticMoveLineList"
+					grid-view="analytic-move-line-distribution-grid"
+					form-view="analytic-move-line-distribution-form" colSpan="12" />
+			</panel>
+		</panel-tabs>
+		<panel name="attrsPanel">
+			<field name="attrs" colSpan="12" />
+		</panel>
+	</form>
+	
+	<action-group name="action-group-purchase-purchase-orderline-product-onchange" id="gst-action-group-purchase-purchase-orderline-product-onchange">
+		<action name="action-purchase-order-line-attrs-delivery-panel"/>
+		<action name="action-purchase-order-line-method-get-product-information"/>
+		<action name="action-purchase-order-line-method-compute" if="price != 0"/>
+		<action name="action-purchase-order-line-method-check-qty" if="price != 0"/>
+		<action name="action-budget-validate-exceed-line-amount"/>
+		<action name="action-invoiceLine-set-product-value"/>
+	</action-group>
+
+	<action-attrs name="action-invoiceLine-set-product-value">
+		<attribute for="gstRate" name="value"
+			expr="eval: product.gstRate" if="product" />
+		<attribute for="gstRate" name="value" expr="0" if="!product" />
+		<attribute for="hsbn" name="value:set"
+			expr="eval: product.hsbn" if="product" />
+		<attribute for="hsbn" name="value:set" expr="" if="!product" />
+	</action-attrs>
+
+	<action-method
+		name="action-invoiceLine-generate-method-calculatedfieldvalue">
+		<call class="com.axelor.gst.web.InvoiceLineController"
+			method="calculatedFieldValue" />
+	</action-method>
+
+
+</object-views>

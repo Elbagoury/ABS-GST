@@ -1,14 +1,18 @@
 package com.axelor.gst.module;
 
 import com.axelor.app.AxelorModule;
-import com.axelor.gst.service.InvoiceLineService;
-import com.axelor.gst.service.InvoiceLineServiceImp;
-import com.axelor.gst.service.InvoiceService;
-import com.axelor.gst.service.InvoiceServiceImp;
+import com.axelor.apps.account.service.invoice.InvoiceServiceImpl;
+import com.axelor.apps.account.service.invoice.generator.InvoiceGenerator;
+import com.axelor.apps.supplychain.service.InvoiceLineSupplychainService;
+import com.axelor.apps.supplychain.service.invoice.InvoiceServiceSupplychainImpl;
+import com.axelor.apps.supplychain.service.invoice.generator.InvoiceGeneratorSupplyChain;
+import com.axelor.gst.service.GstInvoiceLineServiceImp;
+import com.axelor.gst.service.GstInvoiceServiceImp;
 
 public class Module extends AxelorModule {
   protected void configure() {
-    bind(InvoiceLineService.class).to(InvoiceLineServiceImp.class);
-    bind(InvoiceService.class).to(InvoiceServiceImp.class);
+    bind(InvoiceLineSupplychainService.class).to(GstInvoiceLineServiceImp.class);
+  bind(InvoiceGenerator.class).to(GstInvoiceServiceImp.class);
   }
 }
+	

@@ -3,18 +3,15 @@ apply plugin: "com.axelor.app-module"
 apply from: "../version.gradle"
 
 apply {
-	version = absVersion
+version = absVersion
 }
 
 axelor {
-	title "Axelor GST"
-	description "Axelor GST Module"
+title "Axelor GST"
+description "Axelor GST Module"
 }
 
 dependencies {
-	compile project(":modules:axelor-crm")
-	compile project(":modules:axelor-sale")
-	compile project(":modules:axelor-purchase")
-	compile project(":modules:axelor-base")
-	compile project(":modules:axelor-account")
+compile project(":modules:axelor-business-project")
+compile project(":modules:axelor-supplychain")
 }
