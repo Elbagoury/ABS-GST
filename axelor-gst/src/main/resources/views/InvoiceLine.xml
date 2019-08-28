@@ -19,6 +19,7 @@
 		<field name="igst" />
 		<field name="sgst" />
 		<field name="cgst" />
+		<field name="grossAmount" />
 	</grid>
 
 	<grid name="invoice-line-menu-grid" title="Invoice lines"
@@ -90,7 +91,7 @@
 				<field name="hsbn" colSpan="3" />
 				<field name="qty" colSpan="3" required="true"
 					readonlyIf="isSubLine"
-					onChange="action-group-account-invoice-line-qty-onchange" />
+					onChange="action-group-account-invoice-line-product-onchange,action-group-account-invoice-line-qty-onchange" />
 				<field name="unit" colSpan="3" canEdit="false"
 					form-view="unit-form" grid-view="unit-grid"
 					readonlyIf="typeSelect == 2 || isSubLine" />
@@ -116,6 +117,7 @@
 				<field name="igst" />
 				<field name="sgst" />
 				<field name="cgst" />
+				<field name="grossAmount" />
 				<field name="inTaxTotal" colSpan="3" readonly="true" />
 				<field name="isSubLine" hideIf="!isSubLine"
 					if="(__config__.app.isApp('sale') &amp;&amp; __config__.app.getApp('sale').getProductPackMgt())"
@@ -249,9 +251,9 @@
 				<field name="productName" requiredIf="!typeSelect == 1" />
 				<field name="hsbn" colSpan="3" />
 				<field name="qty" required="true"
-					onChange="action-group-account-invoice-line-qty-onchange" />
+					onChange="action-group-account-invoice-line-product-onchange,action-group-account-invoice-line-qty-onchange" />
 				<field name="price" required="true"
-					onChange="action-invoice-line-method-onchange-price,action-invoice-line-method-compute,action-invoice-line-method-compute-analytic-distribution"
+					onChange="action-invoice-line-method-onchange-price,action-invoice-line-method-compute"
 					hidden="true" />
 				<field name="inTaxPrice" required="true"
 					onChange="action-invoice-line-method-onchange-intaxprice,action-invoice-line-method-compute,action-invoice-line-method-compute-analytic-distribution"
@@ -267,6 +269,7 @@
 				<field name="igst" />
 				<field name="sgst" />
 				<field name="cgst" />
+				<field name="grossAmount" />
 				<field name="inTaxTotal" readonly="true" />
 				<field name="invoice" hidden="true" />
 				<panel name="discountPanel" title="Discount" colSpan="12">
@@ -279,6 +282,7 @@
 			</panel>
 		</panel-tabs>
 	</form>
+
 
 
 	<action-group
@@ -306,6 +310,5 @@
 			expr="eval: product.hsbn" if="product" />
 		<attribute for="hsbn" name="value:set" expr="" if="!product" />
 	</action-attrs>
-
 </object-views>
 	

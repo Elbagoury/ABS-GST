@@ -14,4 +14,7 @@ description "Axelor GST Module"
 dependencies {
 compile project(":modules:axelor-business-project")
 compile project(":modules:axelor-supplychain")
+compile project(":modules:axelor-base")
+compile project(":modules:axelor-account")
 }
+

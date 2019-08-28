@@ -4,11 +4,11 @@ import com.axelor.apps.account.db.Invoice;
 import com.axelor.apps.account.db.InvoiceLine;
 import com.axelor.apps.account.db.Tax;
 import com.axelor.apps.account.db.TaxLine;
-import com.axelor.apps.account.db.repo.TaxLineRepository;
 import com.axelor.apps.account.db.repo.TaxRepository;
 import com.axelor.apps.account.service.AccountManagementAccountService;
 import com.axelor.apps.account.service.AnalyticMoveLineService;
 import com.axelor.apps.account.service.app.AppAccountService;
+import com.axelor.apps.account.service.invoice.InvoiceToolService;
 import com.axelor.apps.base.service.CurrencyService;
 import com.axelor.apps.base.service.PriceListService;
 import com.axelor.apps.purchase.service.PurchaseProductService;
@@ -18,7 +18,6 @@ import com.axelor.gst.db.State;
 import com.axelor.inject.Beans;
 import com.google.inject.Inject;
 import com.google.inject.persist.Transactional;
-
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
@@ -41,27 +40,31 @@ public class GstInvoiceLineServiceImp extends InvoiceLineSupplychainService
         analyticMoveLineService,
         accountManagementAccountService,
         purchaseProductService);
-    // TODO Auto-generated constructor stub
   }
 
   @Override
-  public Map<String, Object> fillPriceAndAccount(
-      Invoice invoice, InvoiceLine invoiceLine, boolean isPurchase) throws AxelorException {
+	public Map<String, Object> fillProductInformation(Invoice invoice, InvoiceLine invoiceLine) throws AxelorException {
     // TODO Auto-generated method stub
-    Map<String, Object> gstCalculation = new HashMap<>();
-    gstCalculation = super.fillPriceAndAccount(invoice, invoiceLine, isPurchase);
-    TaxLine taxLine=setGstOnTaxLine(invoiceLine);
-    gstCalculation.put("taxLine",taxLine);
+	  boolean isPurchase = InvoiceToolService.isPurchase(invoice);
+	  Map<String, Object> gstCalculation = new HashMap<>();
+    gstCalculation = super.fillProductInformation(invoice, invoiceLine);
+    TaxLine taxLine = setGstOnTaxLine(invoiceLine);
+    gstCalculation.put("taxLine", taxLine);
     BigDecimal sgst = BigDecimal.ZERO,
         cgst = BigDecimal.ZERO,
         igst = BigDecimal.ZERO,
-        netAmount = BigDecimal.ZERO;
+        netAmount = BigDecimal.ZERO,
+        grossAmount = BigDecimal.ZERO;
 
-    BigDecimal qty = invoiceLine.getQty();
-    netAmount = qty.multiply(invoiceLine.getExTaxTotal());
+    netAmount = invoiceLine.getExTaxTotal();
+
+    if (netAmount.compareTo(new BigDecimal("0.00")) == 0) {
+      // netAmount=getExTaxUnitPrice(invoice, invoiceLine, taxLine, isPurchase);
+      netAmount = getExTaxUnitPrice(invoice, invoiceLine, taxLine, isPurchase);
+    }
     System.out.println(netAmount);
 
-    if (invoice.getCompany() != null && invoice.getCompany() != null) {
+    if (invoice.getCompany() != null && invoice.getAddress() != null) {
       State invoiceState = invoice.getAddress().getState();
       State companyState = invoice.getCompany().getAddress().getState();
       if (invoiceState.equals(companyState)) {
@@ -71,16 +74,15 @@ public class GstInvoiceLineServiceImp extends InvoiceLineSupplychainService
                 .multiply((invoiceLine.getTaxRate()).divide(new BigDecimal(100)))
                 .divide(new BigDecimal(2));
         cgst = sgst;
+        grossAmount = netAmount.add(cgst).add(sgst);
       } else {
         igst = netAmount.multiply((invoiceLine.getTaxRate()).divide(new BigDecimal(100)));
+        grossAmount = netAmount.add(igst);
       }
       gstCalculation.put("igst", igst);
       gstCalculation.put("cgst", cgst);
       gstCalculation.put("sgst", sgst);
-    } else {
-      gstCalculation.put("igst", igst);
-      gstCalculation.put("cgst", cgst);
-      gstCalculation.put("sgst", sgst);
+      gstCalculation.put("grossAmount", grossAmount);
     }
 
     return gstCalculation;
@@ -91,14 +93,9 @@ public class GstInvoiceLineServiceImp extends InvoiceLineSupplychainService
   public TaxLine setGstOnTaxLine(InvoiceLine invoiceLine) {
     // TODO Auto-generated method stub
     Tax tax = Beans.get(TaxRepository.class).all().filter("self.code = 'GST'").fetchOne();
-    long taxLineId = tax.getActiveTaxLine().getId();
-    System.out.println(tax);
-    TaxLine taxLine =
-        Beans.get(TaxLineRepository.class).all().filter("self.id = ?", taxLineId).fetchOne();
+    TaxLine taxLine = tax.getActiveTaxLine();
     taxLine.setValue(invoiceLine.getProduct().getGstRate());
     invoiceLine.setTaxLine(taxLine);
-   
-    
     return taxLine;
   }
 }

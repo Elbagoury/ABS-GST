@@ -11,6 +11,7 @@
 		<decimal name="igst" title="IGST" readonly="true" />
 		<decimal name="sgst" title="SGST" readonly="true" />
 		<decimal name="cgst" title="CGST" readonly="true" />
+		<decimal name="grossAmount" title="Gross Amount" readonly="true"/>
 	</entity>
 
 </domain-models>

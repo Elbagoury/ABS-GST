@@ -5,6 +5,7 @@ import com.axelor.apps.businessproject.service.InvoiceServiceProjectImpl;
 import com.axelor.apps.supplychain.service.InvoiceLineSupplychainService;
 import com.axelor.gst.service.GstInvoiceLineService;
 import com.axelor.gst.service.GstInvoiceLineServiceImp;
+import com.axelor.gst.service.GstInvoiceService;
 import com.axelor.gst.service.GstInvoiceServiceImp;
 
 public class Module extends AxelorModule {
@@ -12,5 +13,6 @@ public class Module extends AxelorModule {
     bind(InvoiceLineSupplychainService.class).to(GstInvoiceLineServiceImp.class);
     bind(GstInvoiceLineService.class).to(GstInvoiceLineServiceImp.class);
     bind(InvoiceServiceProjectImpl.class).to(GstInvoiceServiceImp.class);
+    bind(GstInvoiceService.class).to(GstInvoiceServiceImp.class);
   }
 }

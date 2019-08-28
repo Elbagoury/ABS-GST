@@ -5,7 +5,7 @@
 
 	<form name="invoice-form" title="Invoice"
 		model="com.axelor.apps.account.db.Invoice"
-		onNew="action-account-invoice-onnew-group"
+		onNew="action-account-invoice-onnew-group,action-invoice-set-product-list"
 		onLoad="action-account-invoice-onload-group" id="invoice-form-id">
 
 		<menubar>
@@ -536,7 +536,7 @@ InvoiceSet.length > 0))"
 
 	<form name="invoice-client-form" title="Invoice"
 		model="com.axelor.apps.account.db.Invoice"
-		onNew="action-account-invoice-onnew-group"
+		onNew="action-account-invoice-onnew-group,action-invoice-set-product-list"
 		onLoad="action-account-invoice-onload-group"
 		id="invoice-client-form-id">
 
@@ -786,5 +786,10 @@ InvoiceSet.length > 0))"
 
 
 	</form>
+	
+		<action-method name="action-invoice-set-product-list">
+		<call class="com.axelor.gst.web.GstInvoiceController"
+			method="setProductItem" />
+	</action-method>
 
 </object-views>
