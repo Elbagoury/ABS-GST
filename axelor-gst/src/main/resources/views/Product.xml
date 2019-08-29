@@ -589,8 +589,8 @@
 			<field name="partner" type="many-to-one"
 				x-target="com.axelor.apps.account.db.Partner" x-target-name="partner" />
 			<field name="address" type="many-to-one"
-				x-target="com.axelor.apps.account.db.Address" x-target-name="address"/>
-			<button name="buttonSelectParty" readonlyIf="!partner"
+				x-target="com.axelor.apps.account.db.Address" x-target-name="address" 	onSelect="action-invoice-attrs-domain-address"  />
+			<button name="buttonSelectParty" readonlyIf="!partner &amp;&amp; !address "
 				onClick="action.wizard.invoice.view.create.invoice,close"
 				title="Submit" />
 		</panel>
@@ -612,7 +612,7 @@
 		<view-param name="reload-dotted" value="true" />
 		<context name="idList" expr="eval: idList" />
 		<context name="partnerId" expr="eval: partner.id" />
-		<context name="addressId" expr="address.id"/>
+		<context name="addressId" expr="eval: address.id"/>
 	</action-view>
 	
 	<action-method

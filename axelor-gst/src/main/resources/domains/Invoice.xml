@@ -7,6 +7,13 @@
 	<module name="account" package="com.axelor.apps.account.db" />
 
 	<entity sequential="true" name="Invoice" lang="java">
+
+		<integer name="operationTypeSelect" title="Document Type"
+			required="true" default="3"
+			selection="iinvoice.operation.type.select" />
+		<integer name="operationSubTypeSelect"
+			title="Document Subtype" required="true" default="1"
+			selection="iinvoice.operation.sub.type.select" />
 		<decimal name="netIgst" readonly="true" title="Net IGST" />
 		<decimal name="netCgst" readonly="true" title="Net CGST" />
 		<decimal name="netSgst" readonly="true" title="Net SGST" />

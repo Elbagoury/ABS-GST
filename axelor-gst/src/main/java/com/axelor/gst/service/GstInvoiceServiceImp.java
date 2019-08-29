@@ -2,15 +2,17 @@ package com.axelor.gst.service;
 
 import com.axelor.apps.account.db.Invoice;
 import com.axelor.apps.account.db.InvoiceLine;
-import com.axelor.apps.account.db.TaxLine;
 import com.axelor.apps.account.db.repo.InvoiceRepository;
 import com.axelor.apps.account.service.app.AppAccountService;
 import com.axelor.apps.account.service.invoice.InvoiceLineService;
+import com.axelor.apps.account.service.invoice.InvoiceToolService;
 import com.axelor.apps.account.service.invoice.factory.CancelFactory;
 import com.axelor.apps.account.service.invoice.factory.ValidateFactory;
 import com.axelor.apps.account.service.invoice.factory.VentilateFactory;
+import com.axelor.apps.base.db.Address;
 import com.axelor.apps.base.db.Partner;
 import com.axelor.apps.base.db.Product;
+import com.axelor.apps.base.db.repo.AddressRepository;
 import com.axelor.apps.base.db.repo.PartnerRepository;
 import com.axelor.apps.base.db.repo.ProductRepository;
 import com.axelor.apps.base.service.PartnerService;
@@ -21,7 +23,9 @@ import com.axelor.inject.Beans;
 import com.google.inject.Inject;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class GstInvoiceServiceImp extends InvoiceServiceProjectImpl implements GstInvoiceService {
 
@@ -47,9 +51,7 @@ public class GstInvoiceServiceImp extends InvoiceServiceProjectImpl implements G
     // TODO Auto-generated constructor stub
   }
 
-  @Inject
-  GstInvoiceLineService gstInvoiceLineService;
-  
+  @Inject GstInvoiceLineServiceImp gstInvoiceLineServiceImp;
   @Override
   public Invoice compute(Invoice invoice) throws AxelorException {
     super.compute(invoice);
@@ -68,11 +70,13 @@ public class GstInvoiceServiceImp extends InvoiceServiceProjectImpl implements G
   }
 
   @Override
-  public Invoice setProductItem(Invoice invoice, String idList, int partyId) {
+  public Invoice setProductItem(Invoice invoice, String idList, int partyId,int addressId) {
     if (idList != null) {
       Partner partner =
           Beans.get(PartnerRepository.class).all().filter("self.id = ?", partyId).fetchOne();
+     Address address=Beans.get(AddressRepository.class).all().filter("self.id = ?",addressId).fetchOne();
       invoice.setPartner(partner);
+      invoice.setAddress(address);
 
       List<InvoiceLine> invoiceItemList = new ArrayList<InvoiceLine>();
       String[] items =
@@ -86,8 +90,17 @@ public class GstInvoiceServiceImp extends InvoiceServiceProjectImpl implements G
         invoiceLine.setPrice(product.getSalePrice());
         invoiceLine.setHsbn(product.getHsbn());
         invoiceLine.setProduct(product);
-        invoiceLine.setQty(BigDecimal.ONE)	;
-        //	invoiceLine = gstInvoiceLineService.fillProductInformation(invoiceLine, invoice);
+        invoiceLine.setQty(BigDecimal.ONE);
+    	try {
+    		Map<String, Object> gstCalculation = new HashMap<>();
+    		gstCalculation=gstInvoiceLineServiceImp.setGstOnTaxLine(invoiceLine,invoice);
+		BigDecimal exTaxTotal=(BigDecimal) gstCalculation.get("exTaxTotal");
+		BigDecimal grossAmount=(BigDecimal) gstCalculation.get("grossAmount");
+		invoiceLine.setExTaxTotal(exTaxTotal);
+		invoiceLine.setGrossAmount(grossAmount);
+		} catch (AxelorException e) {
+			e.printStackTrace();
+		}
         invoiceItemList.add(invoiceLine);
       }
       invoice.setInvoiceLineList(invoiceItemList);
