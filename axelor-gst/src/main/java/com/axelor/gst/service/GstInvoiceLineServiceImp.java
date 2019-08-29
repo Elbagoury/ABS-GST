@@ -55,19 +55,20 @@ public class GstInvoiceLineServiceImp extends InvoiceLineSupplychainService impl
 
 		netAmount = invoiceLine.getExTaxTotal();
 
-		if (netAmount.compareTo(new BigDecimal("0.00")) == 0) {
+		if (netAmount.compareTo(new BigDecimal("0.00")) == 0) {			
 			netAmount = getExTaxUnitPrice(invoice, invoiceLine, taxLine, isPurchase);
 			gstCalculation.put("exTaxTotal", netAmount);
+			invoiceLine.setExTaxTotal(netAmount);
 		}
 		if (invoice.getCompany() != null && invoice.getAddress() != null) {
 			State invoiceState = invoice.getAddress().getState();
 			State companyState = invoice.getCompany().getAddress().getState();
 			if (invoiceState.equals(companyState)) {
-				sgst = netAmount.multiply(invoiceLine.getTaxRate().divide(new BigDecimal(2)));
+				sgst = netAmount.multiply(invoiceLine.getTaxLine().getValue().divide(new BigDecimal(2)));
 				cgst = sgst;
 				grossAmount = netAmount.add(cgst).add(sgst);
 			} else {
-				igst = netAmount.multiply((invoiceLine.getTaxRate()));
+				igst = netAmount.multiply((invoiceLine.getTaxLine().getValue()));
 				grossAmount = netAmount.add(igst);
 			}
 			gstCalculation.put("igst", igst);

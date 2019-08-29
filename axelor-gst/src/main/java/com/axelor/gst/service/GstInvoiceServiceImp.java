@@ -96,9 +96,16 @@ public class GstInvoiceServiceImp extends InvoiceServiceProjectImpl implements G
     		gstCalculation=gstInvoiceLineServiceImp.setGstOnTaxLine(invoiceLine,invoice);
 		BigDecimal exTaxTotal=(BigDecimal) gstCalculation.get("exTaxTotal");
 		BigDecimal grossAmount=(BigDecimal) gstCalculation.get("grossAmount");
+		BigDecimal igst=(BigDecimal) gstCalculation.get("igst");
+		BigDecimal cgst=(BigDecimal) gstCalculation.get("cgst");
+		BigDecimal sgst=(BigDecimal) gstCalculation.get("sgst");
+	
 		invoiceLine.setExTaxTotal(exTaxTotal);
 		invoiceLine.setGrossAmount(grossAmount);
-		} catch (AxelorException e) {
+		invoiceLine.setIgst(igst);
+		invoiceLine.setSgst(sgst);
+		invoiceLine.setCgst(cgst);
+    	} catch (AxelorException e) {
 			e.printStackTrace();
 		}
         invoiceItemList.add(invoiceLine);
