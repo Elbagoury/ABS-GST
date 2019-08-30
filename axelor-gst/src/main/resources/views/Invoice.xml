@@ -677,6 +677,7 @@ InvoiceSet.length > 0))"
 				title="Reference documents" itemSpan="6">
 				<field name="internalReference" />
 				<field name="externalReference" />
+				<field name="proirity" colSpan="12"/>
 			</panel>
 			<panel name="datesPanel" title="Dates"
 				readonlyIf="statusSelect == 3">
@@ -783,11 +784,43 @@ InvoiceSet.length > 0))"
 			<field name="netCgst" colSpan="6" />
 			<field name="netSgst" colSpan="6" />
 		</panel>
-
-
 	</form>
-	
-		<action-method name="action-invoice-set-product-list">
+
+	<kanban name="gst-invoice-kanban" title="Invoice-Kanban"
+		model="com.axelor.apps.account.db.Invoice" columnBy="statusSelect"
+		sequenceBy="priority" limit="10">
+		<field name="invoiceId" />
+		<field name="invoiceDate" />
+		<field name="inTaxTotal" />
+		<template><![CDATA[
+ 	<h'cancelled'>{{name}}</h'cancelled'>
+  	<div class="card-body">{{invoiceId}}</div>
+  	<div class="card-footer">
+   	Total Amount: {{inTaxTotal}}
+  	</div>   <div class="card-footer">
+    <i class='fa fa-clock-o'></i> <span>{{invoiceDate}}</span>
+    </div>
+  ]]></template>
+	</kanban>
+
+	<action-validate name="action-invoice-kanban-validate">
+		<error message="You cannot Move Paid invoices"
+			if="__self__.statusSelect == 'paid'" />
+		<error
+			message="You can only move cancelled invoices to draft invoice"
+			if="__self__.statusSelect == 'cancelled' &amp;&amp; statusSelect == 'paid'" />
+		<error
+			message="You cannot Move cancelled invoices to draft invoice"
+			if="__self__.statusSelect == 'cancelled' &amp;&amp; statusSelect == 'validated'" />
+		<error
+			message="You can move Draft invoices to Validated or Cancelled invoice"
+			if="__self__.status == 'draft' &amp;&amp; status == 'paid'" />
+		<error
+			message="You can move Validated invoices to Paid or Cancelled invoice"
+			if="__self__.status == 'validated' &amp;&amp; status == 'draft'" />
+	</action-validate>
+
+	<action-method name="action-invoice-set-product-list">
 		<call class="com.axelor.gst.web.GstInvoiceController"
 			method="setProductItem" />
 	</action-method>

@@ -19,5 +19,57 @@
 		<view type="grid" name="state-grid" />
 		<view type="form" name="state-form" />
 	</action-view>
+	
+	<menuitem name="menu-gst-dashborad" title="DashBoard"
+		action="gst-dashboard" parent="gst-root" />
+	<action-view name="gst-dashboard" title="GST Dashboard">
+		<view type="dashboard" name="gst.dashboard" />
+	</action-view>
+	
+	
+	<action-view name="invoice.root.custinvoices" title="Cust. Invoices"
+		model="com.axelor.apps.account.db.Invoice" id="gst.invoice.root.custinvoices">
+		<view type="grid" name="invoice-grid"/>
+		<view type="kanban" name="gst-invoice-kanban" />
+		<view type="form" name="invoice-form"/>
+		<view-param name="search-filters" value="customer-invoices-filters"/>
+		<domain>self.operationTypeSelect = 3</domain>
+		<context name="_operationTypeSelect" expr="eval:3"/>
+		<context name="todayDate" expr="eval:__config__.app.getTodayDate()" />
+	</action-view>
+
+	<action-view name="invoice.root.custrefunds" title="Cust. Refunds"
+		model="com.axelor.apps.account.db.Invoice" id="gst.invoice.root.custrefunds">
+		<view type="grid" name="invoice-refund-grid"/>
+		<view type="kanban" name="gst-invoice-kanban" />
+		<view type="form" name="invoice-form"/>
+		<view-param name="search-filters" value="customer-refunds-filters"/>
+		<domain>self.operationTypeSelect = 4</domain>
+		<context name="_operationTypeSelect" expr="eval:4"/>
+		<context name="todayDate" expr="eval:__config__.app.getTodayDate()" />
+	</action-view>
+			
+	<action-view name="invoice.root.purchase.supinvoices" title="Suppl. Invoices"
+		model="com.axelor.apps.account.db.Invoice" id="gst.invoice.root.purchase.supinvoices">
+		<view type="grid" name="invoice-supplier-grid"/>
+		<view type="kanban" name="gst-invoice-kanban" />
+		<view type="form" name="invoice-form"/>
+		<view-param name="search-filters" value="supplier-invoices-filters"/>
+		<domain>self.operationTypeSelect = 1</domain>
+		<context name="_operationTypeSelect" expr="eval:1"/>
+		<context name="todayDate" expr="eval:__config__.app.getTodayDate()" />
+	</action-view>
+
+	<action-view name="invoice.root.purchase.suprefunds" title="Suppl. Refunds"
+		model="com.axelor.apps.account.db.Invoice" id="gst.invoice.root.purchase.suprefunds">
+		<view type="grid" name="invoice-supplier-refund-grid"/>
+		<view type="kanban" name="gst-invoice-kanban" />
+		<view type="form" name="invoice-form"/>
+		<view-param name="search-filters" value="supplier-refunds-filters"/>
+		<domain>self.operationTypeSelect = 2</domain>
+		<context name="_operationTypeSelect" expr="eval:2"/>
+		<context name="todayDate" expr="eval:__config__.app.getTodayDate()" />
+	</action-view>	
+		
 </object-views>
 

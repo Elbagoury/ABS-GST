@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<object-views xmlns="http://axelor.com/xml/ns/object-views"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://axelor.com/xml/ns/object-views
+  http://axelor.com/xml/ns/object-views/object-views_5.0.xsd">
+
+	<action-attrs name="chart.default.value">
+		<attribute for="fromDate" name="value"
+			expr="eval: __date__.withDayOfMonth(1)" />
+		<attribute for="toDate" name="value" expr="eval: __date__" />
+	</action-attrs>
+
+	<chart onInit="chart.default.value"
+		name="chart.unpaid.invoice.per.company"
+		title="Unpaid Invoice per Company">
+		<search-fields>
+			<field type="date" name="fromDate" title="From Date"
+				x-required="true" />
+			<field type="date" name="toDate" title="To Date"
+				x-required="true" />
+		</search-fields>
+		<dataset type="jpql">
+    <![CDATA[
+    SELECT
+        COUNT(self.statusSelect) AS UnpaidInvoice,
+         _partner.name AS partner,
+       	MONTH(self.invoiceDate) AS month
+    FROM
+        Invoice self
+         LEFT JOIN
+        self.partner AS _partner
+    WHERE
+         self.invoiceDate BETWEEN :fromDate AND :toDate	
+         AND self.statusSelect In (1,2,3,4) 
+    GROUP BY
+     	_partner.name,MONTH(self.invoiceDate)
+ 	
+    ]]>
+		</dataset>
+		<category key="month" type="month" />
+		<series key="UnpaidInvoice" groupBy="partner" type="bar" />
+	</chart>
+
+
+	<chart onInit="chart.default.value"
+		name="chart.paid.invoice.per.category.per.product"
+		title="Paid Invoice per Category per Product">
+		<search-fields>
+			<field type="date" name="fromDate" title="From Date"
+				x-required="true" />
+			<field type="date" name="toDate" title="To Date"
+				x-required="true" />
+		</search-fields>
+		<dataset type="jpql">
+    <![CDATA[
+    
+    
+	SELECT Count(self.id) as count,
+           _productCategory.name AS pcname,
+           _product.name AS pname
+    FROM Invoice AS self
+    JOIN InvoiceLine AS _invoiceLine ON _invoiceLine.invoice = self.id
+    JOIN Product AS _product ON _product.id = _invoiceLine.product
+    JOIN ProductCategory AS _productCategory ON _productCategory.id = _product.category
+    WHERE self.status = 'paid'
+           AND self.onDate > :fromDate
+           AND self.onDate < :toDate
+    GROUP BY _productCategory.name, _product.name
+    
+    	
+    ]]>
+		</dataset>
+		<category key="pcname" />
+		<series key="count" groupBy="pname" type="bar" />
+	</chart>
+
+
+</object-views>

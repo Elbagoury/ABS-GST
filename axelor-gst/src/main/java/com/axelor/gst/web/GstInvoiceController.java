@@ -15,8 +15,8 @@ public class GstInvoiceController {
     String idList = (String) request.getContext().get("idList");
     if (idList != null) {
       int partnerId = (int) request.getContext().get("partnerId");
-      int addressId =  (int) request.getContext().get("addressId");
-      Invoice invoiceSetValue = service.setProductItem(invoice, idList, partnerId,addressId);
+      int addressId = (int) request.getContext().get("addressId");
+      Invoice invoiceSetValue = service.setProductItem(invoice, idList, partnerId, addressId);
       response.setValues(invoiceSetValue);
     }
   }

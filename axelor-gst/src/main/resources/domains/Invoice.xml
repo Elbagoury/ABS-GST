@@ -17,6 +17,7 @@
 		<decimal name="netIgst" readonly="true" title="Net IGST" />
 		<decimal name="netCgst" readonly="true" title="Net CGST" />
 		<decimal name="netSgst" readonly="true" title="Net SGST" />
+		<integer name="priority" readonly="true" title="Set Priority" />
 	</entity>
 
 </domain-models>

@@ -22,60 +22,77 @@ import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 
-public class GstInvoiceLineServiceImp extends InvoiceLineSupplychainService implements GstInvoiceLineService {
+public class GstInvoiceLineServiceImp extends InvoiceLineSupplychainService
+    implements GstInvoiceLineService {
 
-	@Inject
-	public GstInvoiceLineServiceImp(CurrencyService currencyService, PriceListService priceListService,
-			AppAccountService appAccountService, AnalyticMoveLineService analyticMoveLineService,
-			AccountManagementAccountService accountManagementAccountService,
-			PurchaseProductService purchaseProductService) {
-		super(currencyService, priceListService, appAccountService, analyticMoveLineService,
-				accountManagementAccountService, purchaseProductService);
-	}
+  @Inject
+  public GstInvoiceLineServiceImp(
+      CurrencyService currencyService,
+      PriceListService priceListService,
+      AppAccountService appAccountService,
+      AnalyticMoveLineService analyticMoveLineService,
+      AccountManagementAccountService accountManagementAccountService,
+      PurchaseProductService purchaseProductService) {
+    super(
+        currencyService,
+        priceListService,
+        appAccountService,
+        analyticMoveLineService,
+        accountManagementAccountService,
+        purchaseProductService);
+  }
 
-	@Override
-	public Map<String, Object> fillProductInformation(Invoice invoice, InvoiceLine invoiceLine) throws AxelorException {
-		Map<String, Object> gstCalculation = new HashMap<>();
-		gstCalculation = super.fillProductInformation(invoice, invoiceLine);
-		gstCalculation.putAll(setGstOnTaxLine(invoiceLine, invoice));
-		return gstCalculation;
-	}
+  @Override
+  public Map<String, Object> fillProductInformation(Invoice invoice, InvoiceLine invoiceLine)
+      throws AxelorException {
+    Map<String, Object> gstCalculation = new HashMap<>();
+    gstCalculation = super.fillProductInformation(invoice, invoiceLine);
+    gstCalculation.putAll(setGstOnTaxLine(invoiceLine, invoice));
+    return gstCalculation;
+  }
 
-	@Transactional
-	public Map<String, Object> setGstOnTaxLine(InvoiceLine invoiceLine, Invoice invoice) throws AxelorException {
-		Map<String, Object> gstCalculation = new HashMap<>();
-		boolean isPurchase = InvoiceToolService.isPurchase(invoice);
-		Tax tax = Beans.get(TaxRepository.class).all().filter("self.code = 'GST'").fetchOne();
-		TaxLine taxLine = tax.getActiveTaxLine();
-		taxLine.setValue(invoiceLine.getProduct().getGstRate());
-		invoiceLine.setTaxLine(taxLine);
-		gstCalculation.put("taxLine", taxLine);
-		BigDecimal sgst = BigDecimal.ZERO, cgst = BigDecimal.ZERO, igst = BigDecimal.ZERO, netAmount = BigDecimal.ZERO,
-				grossAmount = BigDecimal.ZERO;
+  @Transactional
+  public Map<String, Object> setGstOnTaxLine(InvoiceLine invoiceLine, Invoice invoice)
+      throws AxelorException {
+    Map<String, Object> gstCalculation = new HashMap<>();
+    boolean isPurchase = InvoiceToolService.isPurchase(invoice);
+    Tax tax = Beans.get(TaxRepository.class).all().filter("self.code = 'GST'").fetchOne();
+    TaxLine taxLine = tax.getActiveTaxLine();
+    taxLine.setValue(invoiceLine.getProduct().getGstRate());
+    invoiceLine.setTaxLine(taxLine);
+    gstCalculation.put("taxLine", taxLine);
+    BigDecimal sgst = BigDecimal.ZERO,
+        cgst = BigDecimal.ZERO,
+        igst = BigDecimal.ZERO,
+        netAmount = BigDecimal.ZERO,
+        grossAmount = BigDecimal.ZERO;
 
-		netAmount = invoiceLine.getExTaxTotal();
+    netAmount = invoiceLine.getExTaxTotal();
 
-		if (netAmount.compareTo(new BigDecimal("0.00")) == 0) {			
-			netAmount = getExTaxUnitPrice(invoice, invoiceLine, taxLine, isPurchase);
-			gstCalculation.put("exTaxTotal", netAmount);
-			invoiceLine.setExTaxTotal(netAmount);
-		}
-		if (invoice.getCompany() != null && invoice.getAddress() != null) {
-			State invoiceState = invoice.getAddress().getState();
-			State companyState = invoice.getCompany().getAddress().getState();
-			if (invoiceState.equals(companyState)) {
-				sgst = netAmount.multiply(invoiceLine.getTaxLine().getValue().divide(new BigDecimal(2)));
-				cgst = sgst;
-				grossAmount = netAmount.add(cgst).add(sgst);
-			} else {
-				igst = netAmount.multiply((invoiceLine.getTaxLine().getValue()));
-				grossAmount = netAmount.add(igst);
-			}
-			gstCalculation.put("igst", igst);
-			gstCalculation.put("cgst", cgst);
-			gstCalculation.put("sgst", sgst);
-			gstCalculation.put("grossAmount", grossAmount);
-		}
-		return gstCalculation;
-	}
+    if (netAmount.compareTo(new BigDecimal("0.00")) == 0) {
+      netAmount = getExTaxUnitPrice(invoice, invoiceLine, taxLine, isPurchase);
+      gstCalculation.put("exTaxTotal", netAmount);
+      invoiceLine.setExTaxTotal(netAmount);
+    }
+    if (invoice.getCompany() != null
+        && invoice.getAddress() != null
+        && invoice.getAddress().getState() != null
+        && invoice.getAddress().getState() != null) {
+      State invoiceState = invoice.getAddress().getState();
+      State companyState = invoice.getCompany().getAddress().getState();
+      if (invoiceState.equals(companyState)) {
+        sgst = netAmount.multiply(invoiceLine.getTaxLine().getValue().divide(new BigDecimal(2)));
+        cgst = sgst;
+        grossAmount = netAmount.add(cgst).add(sgst);
+      } else {
+        igst = netAmount.multiply((invoiceLine.getTaxLine().getValue()));
+        grossAmount = netAmount.add(igst);
+      }
+      gstCalculation.put("igst", igst);
+      gstCalculation.put("cgst", cgst);
+      gstCalculation.put("sgst", sgst);
+      gstCalculation.put("grossAmount", grossAmount);
+    }
+    return gstCalculation;
+  }
 }

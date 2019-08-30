@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<object-views xmlns="http://axelor.com/xml/ns/object-views"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://axelor.com/xml/ns/object-views http://axelor.com/xml/ns/object-views/object-views_5.1.xsd">
+
+	<dashboard name="gst.dashboard"
+		title="Inovice Statistics">
+		<dashlet action="chart:chart.unpaid.invoice.per.company" />
+	</dashboard>
+	<action-view
+		name="gst.action.view.invoice.older.than.one.month"
+		title="Validated-Invoice" model="com.axelor.apps.account.db.Invoice">
+		<view type="grid" name="invoice-grid" />
+		<domain>self.status = :status AND self.invoiceDate &lt; :date</domain>
+		<context name="status" expr="1" />
+		<context name="date" expr="eval: __datetime__.minusMonths(1)" />
+	</action-view>
+</object-views>
