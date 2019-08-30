@@ -8,10 +8,10 @@
 		x-row-height="80">
 		<toolbar>
 			<button name="btnPrint" title="Print Product Details"
-				onClick="action.report.attachment.setproductreportvalue,print.report.product.details"
+				onClick="action.report.attachment.setproductreportvalue"
 				icon="fa-print" />
 			<button name="btnCreateInvoice" title="Create Invoice"
-				onClick="action.report.attachment.setproductreportvalue,action.wizard.select.party"
+				onClick="action.report.attachment.passProductIds,action.wizard.select.party"
 				icon="fa-rocket" />
 		</toolbar>
 		<field name="code" x-bind="{{code|unaccent|uppercase}}"
@@ -582,20 +582,24 @@
 			<mail-messages />
 		</panel-mail>
 	</form>
-	
+
 	<form name="invoice-wizard-party-select-form"
 		title="invoice-wizard-Form" model="com.axelor.apps.account.db.Invoice">
 		<panel title="Select Partner">
 			<field name="partner" type="many-to-one"
-				x-target="com.axelor.apps.account.db.Partner" x-target-name="partner" />
+				x-target="com.axelor.apps.account.db.Partner"
+				x-target-name="partner" />
 			<field name="address" type="many-to-one"
-				x-target="com.axelor.apps.account.db.Address" x-target-name="address" 	onSelect="action-invoice-attrs-domain-address"  />
-			<button name="buttonSelectParty" readonlyIf="!partner &amp;&amp; !address "
+				x-target="com.axelor.apps.account.db.Address"
+				x-target-name="address"
+				onSelect="action-invoice-attrs-domain-address" />
+			<button name="buttonSelectParty"
+				readonlyIf="!partner &amp;&amp; !address "
 				onClick="action.wizard.invoice.view.create.invoice,close"
 				title="Submit" />
 		</panel>
 	</form>
-	
+
 	<action-view name="action.wizard.select.party"
 		title="Create-Invoice" model="com.axelor.apps.account.db.Invoice">
 		<view type="form" name="invoice-wizard-party-select-form" />
@@ -612,13 +616,19 @@
 		<view-param name="reload-dotted" value="true" />
 		<context name="idList" expr="eval: idList" />
 		<context name="partnerId" expr="eval: partner.id" />
-		<context name="addressId" expr="eval: address.id"/>
+		<context name="addressId" expr="eval: address.id" />
 	</action-view>
-	
+
 	<action-method
 		name="action.report.attachment.setproductreportvalue">
 		<call class="com.axelor.gst.web.ProductController"
-			method="setProductReportValue" />
+			method="generateProductIds" />
+	</action-method>
+
+	<action-method
+		name="action.report.attachment.passProductIds">
+		<call class="com.axelor.gst.web.ProductController"
+			method="getProductIds" />
 	</action-method>
 
 	<action-attrs name="action.gst.product.setgstrate">
@@ -626,10 +636,4 @@
 			expr="eval: productCategory.gstRate" />
 	</action-attrs>
 
-	<action-report name="print.report.product.details"
-		design="product_report.rptdesign" output="product-${date}"
-		format="pdf">
-		<param name="productId" expr="eval: ids" />
-		<param name="Path" expr="eval: Path" />
-	</action-report>
 </object-views>
