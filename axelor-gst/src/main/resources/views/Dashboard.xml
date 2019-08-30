@@ -6,13 +6,18 @@
 	<dashboard name="gst.dashboard"
 		title="Inovice Statistics">
 		<dashlet action="chart:chart.unpaid.invoice.per.company" />
+		<dashlet action="chart:chart.paid.invoice.per.category.per.product"/>
+		<dashlet action="chart:chart.customer.per.state"/>
+		<dashlet action="chart:chart.invoice.per.status"/>
+		<dashlet action="chart:chart.invoice.per.status.linechart"/>
+		<dashlet action="gst.action.view.invoice.older.than.one.month"/>
 	</dashboard>
 	<action-view
 		name="gst.action.view.invoice.older.than.one.month"
 		title="Validated-Invoice" model="com.axelor.apps.account.db.Invoice">
 		<view type="grid" name="invoice-grid" />
-		<domain>self.status = :status AND self.invoiceDate &lt; :date</domain>
-		<context name="status" expr="1" />
+		<domain>self.statusSelect = :status AND self.invoiceDate &lt; :date</domain>
+		<context name="status" expr="2" />
 		<context name="date" expr="eval: __datetime__.minusMonths(1)" />
 	</action-view>
 </object-views>

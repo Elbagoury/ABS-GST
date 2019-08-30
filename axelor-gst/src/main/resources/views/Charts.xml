@@ -61,10 +61,10 @@
     FROM Invoice AS self
     JOIN InvoiceLine AS _invoiceLine ON _invoiceLine.invoice = self.id
     JOIN Product AS _product ON _product.id = _invoiceLine.product
-    JOIN ProductCategory AS _productCategory ON _productCategory.id = _product.category
-    WHERE self.status = 'paid'
-           AND self.onDate > :fromDate
-           AND self.onDate < :toDate
+    JOIN ProductCategory AS _productCategory ON _productCategory.id = _product.productCategory
+    WHERE self.statusSelect = 3
+           AND self.invoiceDate > :fromDate
+           AND self.invoiceDate < :toDate
     GROUP BY _productCategory.name, _product.name
     
     	
@@ -74,5 +74,54 @@
 		<series key="count" groupBy="pname" type="bar" />
 	</chart>
 
+	<chart name="chart.customer.per.state" title="Customer per Sate">
+		<dataset type="jpql">
+    <![CDATA[
+   	 SELECT
+        COUNT(self.name) AS Customer,
+        _Address.state.name AS state
+   		FROM
+        Partner self
+         JOIN Address AS _Address ON  _Address.id = self.mainAddress 
+       GROUP BY
+     	_Address.state.name,self.name   	
+   
+    ]]>
+		</dataset>
+		<category key="state" />
+		<series key="Customer" type="pie" />
+	</chart>
+
+	<chart name="chart.invoice.per.status" title="Amount per Status">
+		<dataset type="jpql">
+    <![CDATA[
+ 		 SELECT
+        SUM(self.inTaxTotal) AS Amount,
+        self.statusSelect AS status
+    FROM
+        Invoice self
+       GROUP BY
+     	self.statusSelect    
+    ]]>
+		</dataset>
+		<category key="status" type="text" />
+		<series key="Amount" type="bar" />
+	</chart>
+	<chart name="chart.invoice.per.status.linechart"
+		title="Invoice per Status">
+		<dataset type="jpql">
+    <![CDATA[
+    SELECT
+        invoice.statusSelect as status, COUNT(invoice.id) as totalinvoice
+    FROM
+        Invoice as invoice
+    GROUP BY
+        invoice.statusSelect
+    ]]>
+    </dataset>
+		<category key="totalinvoice" title="Status" type="text" />
+		<series key="totalinvoice" groupBy="status" type="line"
+			title="Invoice" />
+	</chart>
 
 </object-views>

@@ -6,7 +6,7 @@
 	<form name="invoice-form" title="Invoice"
 		model="com.axelor.apps.account.db.Invoice"
 		onNew="action-account-invoice-onnew-group,action-invoice-set-product-list"
-		onLoad="action-account-invoice-onload-group" id="invoice-form-id">
+		onLoad="action-account-invoice-onload-group" id="gst-invoice-form">
 
 		<menubar>
 			<menu title="Reports" icon="fa-files-o" showTitle="true">
