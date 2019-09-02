@@ -4,6 +4,7 @@ import com.axelor.apps.account.db.Invoice;
 import com.axelor.apps.account.db.InvoiceLine;
 import com.axelor.apps.account.db.Tax;
 import com.axelor.apps.account.db.TaxLine;
+import com.axelor.apps.account.db.repo.TaxLineRepository;
 import com.axelor.apps.account.db.repo.TaxRepository;
 import com.axelor.apps.account.service.AccountManagementAccountService;
 import com.axelor.apps.account.service.AnalyticMoveLineService;
@@ -57,8 +58,7 @@ public class GstInvoiceLineServiceImp extends InvoiceLineSupplychainService
     Map<String, Object> gstCalculation = new HashMap<>();
     boolean isPurchase = InvoiceToolService.isPurchase(invoice);
     Tax tax = Beans.get(TaxRepository.class).all().filter("self.code = 'GST'").fetchOne();
-    TaxLine taxLine = tax.getActiveTaxLine();
-    taxLine.setValue(invoiceLine.getProduct().getGstRate());
+    TaxLine taxLine=Beans.get(TaxLineRepository.class).all().filter("self.tax = ? and self.value =?",tax.getId(),invoiceLine.getProduct().getGstRate()).fetchOne();;
     invoiceLine.setTaxLine(taxLine);
     gstCalculation.put("taxLine", taxLine);
     BigDecimal sgst = BigDecimal.ZERO,
